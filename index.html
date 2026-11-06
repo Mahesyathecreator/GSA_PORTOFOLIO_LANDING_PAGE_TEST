@@ -1,0 +1,941 @@
+import React, { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  Globe, Code, Sparkles, Award, Rocket, CheckCircle, 
+  ExternalLink, Mail, Linkedin, Github, ChevronRight, 
+  Sun, Moon, Layers, Zap, Cpu, Terminal, Compass, UserCheck,
+  TrendingUp, Activity, Smartphone, Heart, ArrowUpRight, ShieldAlert,
+  Share2, MessageSquare, Repeat, Eye
+} from 'lucide-react';
+
+// --- DATA DICTIONARY FOR BILINGUAL SUPPORT ---
+const contentData = {
+  EN: {
+    ticker: "Metaverse Pioneer · Founder & CEO of Meta · Building the Future of AI & Spatial Computing · Open Source AI Advocate (Llama) · Connecting 3.8+ Billion People ·",
+    nav: {
+      about: "About Mark",
+      ventures: "Ventures",
+      milestones: "Milestones",
+      tech: "Tech & AI",
+      cards: "Card Swap",
+      contact: "Connect"
+    },
+    hero: {
+      badge1: "Since 2004",
+      badge2: "Meta AI Leader!",
+      titleLine1: "Connecting",
+      titleLine2: "the World.",
+      titleLine3: "Building AI.",
+      subline: "Mark Zuckerberg — Founder, Chairman & CEO of Meta. Leading the next generation of social connectivity, AI innovation, and spatial computing.",
+      btn1: "Explore Ventures",
+      btn2: "Timeline & History"
+    },
+    stats: {
+      reach: "3.8B+",
+      reachDesc: "Monthly Active Users across Meta Apps",
+      val: "$1.3T+",
+      valDesc: "Meta Market Capitalization",
+      ai: "Llama 3",
+      aiDesc: "State-of-the-Art Open Source AI Model",
+      czi: "$10B+",
+      cziDesc: "Pledged via Chan Zuckerberg Initiative"
+    },
+    ventures: {
+      title: "Pioneering Meta Ecosystem",
+      subtitle: "Transforming how humanity communicates, connects, and experiences reality.",
+      categories: ["All", "Social Platforms", "Hardware & AR/VR", "Artificial Intelligence", "Philanthropy"],
+      items: [
+        {
+          id: 1,
+          name: "Facebook & Instagram",
+          category: "Social Platforms",
+          badge: "Global Core",
+          desc: "The world's largest social network platforms reaching billions daily.",
+          tag: "3.2B+ Daily Active Users",
+          color: "bg-blue-500",
+          link: "https://facebook.com"
+        },
+        {
+          id: 2,
+          name: "Meta Quest & Ray-Ban Meta",
+          category: "Hardware & AR/VR",
+          badge: "Spatial Hardware",
+          desc: "Next-gen VR headsets & smart glasses bringing AR into everyday style.",
+          tag: "Leading Spatial Computing",
+          color: "bg-amber-400",
+          link: "https://meta.com"
+        },
+        {
+          id: 3,
+          name: "Llama AI Series",
+          category: "Artificial Intelligence",
+          badge: "Open Source AI",
+          desc: "Industry-leading open-weights large language models democratizing AI.",
+          tag: "Democratizing Global AI",
+          color: "bg-pink-400",
+          link: "https://ai.meta.com"
+        },
+        {
+          id: 4,
+          name: "Chan Zuckerberg Initiative",
+          category: "Philanthropy",
+          badge: "Impact & Science",
+          desc: "Curing, preventing, or managing all diseases by the end of this century.",
+          tag: "Biomedical & Education",
+          color: "bg-emerald-400",
+          link: "https://chanzuckerberg.com"
+        },
+        {
+          id: 5,
+          name: "WhatsApp & Threads",
+          category: "Social Platforms",
+          badge: "Real-time Chat",
+          desc: "Secure end-to-end messaging and the fastest growing text social app.",
+          tag: "2B+ Active Users",
+          color: "bg-indigo-400",
+          link: "https://whatsapp.com"
+        },
+        {
+          id: 6,
+          name: "Meta Horizon Worlds",
+          category: "Hardware & AR/VR",
+          badge: "Virtual Reality",
+          desc: "Immersive 3D social world where creators interact and express themselves.",
+          tag: "Metaverse Ecosystem",
+          color: "bg-purple-400",
+          link: "https://meta.com/horizon"
+        }
+      ]
+    },
+    tech: {
+      title: "Tech Stack & Visionary Pillars",
+      subtitle: "The core technologies powering Mark's vision for 2026 and beyond.",
+      pillars: [
+        { title: "Open Source AI (Llama)", desc: "Empowering developers globally with open-weight frontier models to ensure AI safety through open collaboration." },
+        { title: "Spatial Computing", desc: "Building light-weight smart glasses and VR technology that seamlessly blends physical & digital realities." },
+        { title: "Custom Silicon (MTIA)", desc: "Designing Meta's custom Training and Inference Accelerators optimized specifically for AI workloads." },
+        { title: "Global Infrastructure", desc: "Operating hyper-scale data centers powered by renewable energy and custom optic connectivity." }
+      ]
+    },
+    swap: {
+      title: "Card Swap Spotlight",
+      subtitle: "Click 'Swap Card' to stack through Mark's key philosophies and achievements."
+    },
+    reviews: {
+      title: "Words & Legacy",
+      items: [
+        { text: "The biggest risk is not taking any risk. In a world that is changing quickly, the only strategy that is guaranteed to fail is not taking risks.", author: "Mark Zuckerberg", role: "Harvard Speech" },
+        { text: "Building products that connect billions of people requires relentless execution and standard-setting open source AI development.", author: "Meta Engineering", role: "Core Philosophy" },
+        { text: "Smart glasses will replace phones as our primary computing device before the decade is out.", author: "Tech Horizon 2026", role: "Keynote Vision" }
+      ]
+    },
+    contact: {
+      title: "Connect & Follow",
+      subtitle: "Stay updated with Mark's latest posts, open-source releases, and announcements.",
+      address: "Meta HQ — 1 Hacker Way, Menlo Park, CA 94025",
+      btn: "Follow on Threads"
+    }
+  },
+  ID: {
+    ticker: "Pioneer Metaverse · Pendiri & CEO Meta · Membangun Masa Depan AI & Spatial Computing · Pengembang AI Terbuka (Llama) · Menghubungkan 3.8+ Miliar Orang ·",
+    nav: {
+      about: "Tentang Mark",
+      ventures: "Perusahaan",
+      milestones: "Pencapaian",
+      tech: "Teknologi & AI",
+      cards: "Tukar Kartu",
+      contact: "Kontak"
+    },
+    hero: {
+      badge1: "Sejak 2004",
+      badge2: "Pemimpin Meta AI!",
+      titleLine1: "Menghubungkan",
+      titleLine2: "Dunia.",
+      titleLine3: "Membangun AI.",
+      subline: "Mark Zuckerberg — Pendiri, Chairman & CEO Meta. Memimpin generasi baru konektivitas sosial, inovasi kecerdasan buatan, dan komputasi spasial.",
+      btn1: "Jelajahi Proyek",
+      btn2: "Garis Waktu & Sejarah"
+    },
+    stats: {
+      reach: "3.8B+",
+      reachDesc: "Pengguna Aktif Bulanan di Aplikasi Meta",
+      val: "$1.3T+",
+      valDesc: "Kapitalisasi Pasar Meta",
+      ai: "Llama 3",
+      aiDesc: "Model AI Open Source Kelas Dunia",
+      czi: "$10B+",
+      cziDesc: "Komitmen via Chan Zuckerberg Initiative"
+    },
+    ventures: {
+      title: "Ekosistem Utama Meta",
+      subtitle: "Mengubah cara manusia berkomunikasi, berinteraksi, dan mengalami realitas.",
+      categories: ["Semua", "Platform Sosial", "Hardware & AR/VR", "Kecerdasan Buatan", "Filantropi"],
+      items: [
+        {
+          id: 1,
+          name: "Facebook & Instagram",
+          category: "Platform Sosial",
+          badge: "Inti Global",
+          desc: "Platform jejaring sosial terbesar di dunia yang menghubungkan miliaran pengguna.",
+          tag: "3.2B+ Pengguna Harian",
+          color: "bg-blue-500",
+          link: "https://facebook.com"
+        },
+        {
+          id: 2,
+          name: "Meta Quest & Ray-Ban Meta",
+          category: "Hardware & AR/VR",
+          badge: "Perangkat Spasial",
+          desc: "Headset VR & kacamata pintar yang membawa AR ke dalam gaya hidup harian.",
+          tag: "Pemimpin Komputasi Spasial",
+          color: "bg-amber-400",
+          link: "https://meta.com"
+        },
+        {
+          id: 3,
+          name: "Seri AI Llama",
+          category: "Kecerdasan Buatan",
+          badge: "AI Open Source",
+          desc: "Model bahasa besar terdepan dengan bobot terbuka untuk mendemokratisasi AI.",
+          tag: "Demokratisasi AI Global",
+          color: "bg-pink-400",
+          link: "https://ai.meta.com"
+        },
+        {
+          id: 4,
+          name: "Chan Zuckerberg Initiative",
+          category: "Filantropi",
+          badge: "Dampak & Sains",
+          desc: "Menyembuhkan dan mengelola seluruh penyakit hingga akhir abad ini.",
+          tag: "Biomedis & Pendidikan",
+          color: "bg-emerald-400",
+          link: "https://chanzuckerberg.com"
+        },
+        {
+          id: 5,
+          name: "WhatsApp & Threads",
+          category: "Platform Sosial",
+          badge: "Pesan Real-time",
+          desc: "Pesan terenkripsi aman & aplikasi teks sosial dengan pertumbuhan tercepat.",
+          tag: "2B+ Pengguna Aktif",
+          color: "bg-indigo-400",
+          link: "https://whatsapp.com"
+        },
+        {
+          id: 6,
+          name: "Meta Horizon Worlds",
+          category: "Hardware & AR/VR",
+          badge: "Realitas Virtual",
+          desc: "Dunia sosial 3D tempat para kreator berinteraksi dan mengekspresikan diri.",
+          tag: "Ekosistem Metaverse",
+          color: "bg-purple-400",
+          link: "https://meta.com/horizon"
+        }
+      ]
+    },
+    tech: {
+      title: "Pilar Teknologi & Visi Masa Depan",
+      subtitle: "Teknologi inti yang mendorong visi Mark untuk 2026 dan seterusnya.",
+      pillars: [
+        { title: "AI Terbuka (Llama)", desc: "Memberdayakan pengembang secara global dengan model terbuka untuk memastikan keamanan AI melalui kolaborasi." },
+        { title: "Komputasi Spasial", desc: "Membangun kacamata pintar ringan dan teknologi VR yang menyatu secara mulus antara fisik & digital." },
+        { title: "Silikon Kustom (MTIA)", desc: "Merancang akselerator kustom Meta untuk beban kerja kecerdasan buatan secara optimal." },
+        { title: "Infrastruktur Global", desc: "Mengoperasikan pusat data skala besar bertenaga energi terbarukan dan koneksi optik kustom." }
+      ]
+    },
+    swap: {
+      title: "Sorotan Kartu Interaktif",
+      subtitle: "Klik 'Tukar Kartu' untuk melihat filosofi & pencapaian penting Mark."
+    },
+    reviews: {
+      title: "Kutipan & Filosofi",
+      items: [
+        { text: "Risiko terbesar adalah tidak mengambil risiko sama sekali. Di dunia yang berubah cepat, satu-satunya strategi yang pasti gagal adalah tidak mengambil risiko.", author: "Mark Zuckerberg", role: "Pidato Harvard" },
+        { text: "Membangun produk yang menghubungkan miliaran orang membutuhkan eksekusi tanpa henti dan standar pengembangan AI terbuka.", author: "Meta Engineering", role: "Filosofi Inti" },
+        { text: "Kacamata pintar akan menggantikan ponsel sebagai perangkat komputasi utama sebelum dekade ini berakhir.", author: "Visi Teknologi 2026", role: "Keynote Strategy" }
+      ]
+    },
+    contact: {
+      title: "Terhubung & Ikuti",
+      subtitle: "Dapatkan pembaruan terbaru tentang unggahan Mark, rilis kode terbuka, dan pengumuman Meta.",
+      address: "Meta HQ — 1 Hacker Way, Menlo Park, CA 94025",
+      btn: "Ikuti di Threads"
+    }
+  }
+};
+
+// --- INTERACTIVE 3D PARTICLE / WIREFRAME CANVAS (Three.js Style via HTML5 Canvas) ---
+const Interactive3DCanvas = ({ isDark }) => {
+  const canvasRef = useRef(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    let animationFrameId;
+
+    let width = (canvas.width = canvas.parentElement.clientWidth);
+    let height = (canvas.height = canvas.parentElement.clientHeight);
+
+    const handleResize = () => {
+      if (!canvas.parentElement) return;
+      width = canvas.width = canvas.parentElement.clientWidth;
+      height = canvas.height = canvas.parentElement.clientHeight;
+    };
+
+    window.addEventListener('resize', handleResize);
+
+    // 3D Particles Node Network
+    const numNodes = 45;
+    const nodes = [];
+
+    for (let i = 0; i < numNodes; i++) {
+      nodes.push({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        z: Math.random() * 300 - 150,
+        vx: (Math.random() - 0.5) * 1.2,
+        vy: (Math.random() - 0.5) * 1.2,
+        vz: (Math.random() - 0.5) * 1.2,
+        radius: Math.random() * 3 + 2
+      });
+    }
+
+    let mouseX = width / 2;
+    let mouseY = height / 2;
+
+    const handleMouseMove = (e) => {
+      const rect = canvas.getBoundingClientRect();
+      mouseX = e.clientX - rect.left;
+      mouseY = e.clientY - rect.top;
+    };
+
+    canvas.addEventListener('mousemove', handleMouseMove);
+
+    const render = () => {
+      ctx.clearRect(0, 0, width, height);
+
+      // Rotate nodes slightly based on mouse position
+      const targetAngleX = (mouseX - width / 2) * 0.0003;
+      const targetAngleY = (mouseY - height / 2) * 0.0003;
+
+      for (let i = 0; i < nodes.length; i++) {
+        const node = nodes[i];
+
+        node.x += node.vx;
+        node.y += node.vy;
+        node.z += node.vz;
+
+        if (node.x < 0 || node.x > width) node.vx *= -1;
+        if (node.y < 0 || node.y > height) node.vy *= -1;
+        if (node.z < -200 || node.z > 200) node.vz *= -1;
+
+        // Perspective transform
+        const fov = 300;
+        const scale = fov / (fov + node.z);
+        const projX = (node.x - width / 2) * scale + width / 2 + targetAngleX * node.z;
+        const projY = (node.y - height / 2) * scale + height / 2 + targetAngleY * node.z;
+
+        // Draw Nodes
+        ctx.beginPath();
+        ctx.arc(projX, projY, Math.max(1, node.radius * scale), 0, Math.PI * 2);
+        ctx.fillStyle = isDark ? 'rgba(250, 204, 21, 0.85)' : 'rgba(37, 99, 235, 0.85)';
+        ctx.fill();
+
+        // Connect lines
+        for (let j = i + 1; j < nodes.length; j++) {
+          const other = nodes[j];
+          const dx = node.x - other.x;
+          const dy = node.y - other.y;
+          const dz = node.z - other.z;
+          const dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
+
+          if (dist < 140) {
+            const otherScale = fov / (fov + other.z);
+            const otherProjX = (other.x - width / 2) * otherScale + width / 2;
+            const otherProjY = (other.y - height / 2) * otherScale + height / 2;
+
+            ctx.beginPath();
+            ctx.moveTo(projX, projY);
+            ctx.lineTo(otherProjX, otherProjY);
+            const strokeColor = isDark ? '250, 204, 21' : '30, 41, 59';
+            ctx.strokeStyle = `rgba(${strokeColor}, ${1 - dist / 140})`;
+            ctx.lineWidth = 1.2 * scale;
+            ctx.stroke();
+          }
+        }
+      }
+
+      animationFrameId = requestAnimationFrame(render);
+    };
+
+    render();
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      canvas.removeEventListener('mousemove', handleMouseMove);
+      cancelAnimationFrame(animationFrameId);
+    };
+  }, [isDark]);
+
+  return <canvas ref={canvasRef} className="w-full h-full block rounded-3xl" />;
+};
+
+// --- CARD SWAP COMPONENT ---
+const CardSwapSection = ({ lang }) => {
+  const t = contentData[lang].swap;
+  const cardsData = [
+    {
+      id: 1,
+      title: "Open Source AI Strategy",
+      subtitle: "Meta Llama Architecture",
+      desc: "Open source is safer, faster, and more economic. By sharing Llama with the global dev community, we establish open standards for AI development.",
+      badge: "AI Vision",
+      color: "bg-amber-400",
+      icon: Cpu,
+      stats: "350M+ Downloads"
+    },
+    {
+      id: 2,
+      title: "Spatial Computing Era",
+      subtitle: "Ray-Ban Meta & Quest 3",
+      desc: "Glasses are the ideal form factor for AI because they let your digital assistant see what you see and hear what you hear in real-time.",
+      badge: "Hardware Revolution",
+      color: "bg-blue-400",
+      icon: Eye,
+      stats: "#1 Smart Glasses"
+    },
+    {
+      id: 3,
+      title: "Chan Zuckerberg Initiative",
+      subtitle: "Biomedical Breakthroughs",
+      desc: "Our long-term initiative aims to build tools to cure, prevent, or manage all human diseases by the end of the 21st century.",
+      badge: "Philanthropy",
+      color: "bg-pink-400",
+      icon: Heart,
+      stats: "$10B Pledged"
+    },
+    {
+      id: 4,
+      title: "Connecting 3.8 Billion",
+      subtitle: "Meta Family of Apps",
+      desc: "From Facebook and Instagram to WhatsApp and Threads, empowering communities across every country and culture on Earth.",
+      badge: "Global Reach",
+      color: "bg-emerald-400",
+      icon: Share2,
+      stats: "3.8B Active Users"
+    }
+  ];
+
+  const [cards, setCards] = useState(cardsData);
+
+  const handleSwap = () => {
+    setCards((prev) => {
+      const next = [...prev];
+      const top = next.pop();
+      next.unshift(top);
+      return next;
+    });
+  };
+
+  return (
+    <div className="w-full max-w-5xl mx-auto py-12 px-4">
+      <div className="text-center mb-10">
+        <span className="inline-block px-4 py-1 rounded-full text-xs font-bold uppercase tracking-widest border-2 border-slate-900 bg-amber-300 text-slate-900 shadow-[3px_3px_0px_#0f172a] mb-3">
+          React Interactive
+        </span>
+        <h2 className="font-extrabold text-3xl md:text-5xl text-slate-900 dark:text-cream tracking-tight">
+          {t.title}
+        </h2>
+        <p className="text-slate-700 dark:text-slate-300 mt-2 font-medium">
+          {t.subtitle}
+        </p>
+      </div>
+
+      <div className="flex flex-col items-center justify-center min-h-[380px] relative">
+        <div className="relative w-full max-w-md h-[320px] flex items-center justify-center">
+          <AnimatePresence>
+            {cards.map((card, index) => {
+              const isTop = index === cards.length - 1;
+              const offset = (cards.length - 1 - index) * 14;
+              const scale = 1 - (cards.length - 1 - index) * 0.05;
+              const rotate = (cards.length - 1 - index) * -4;
+
+              const Icon = card.icon;
+
+              return (
+                <motion.div
+                  key={card.id}
+                  layout
+                  initial={{ scale: 0.8, y: 50, opacity: 0 }}
+                  animate={{
+                    scale,
+                    y: offset,
+                    rotate: isTop ? 0 : rotate,
+                    opacity: 1,
+                    zIndex: index
+                  }}
+                  exit={{ scale: 0.8, y: -100, opacity: 0 }}
+                  transition={{ type: "spring", stiffness: 260, damping: 20 }}
+                  className={`absolute inset-0 p-6 rounded-3xl border-3 border-slate-900 shadow-[6px_6px_0px_#0f172a] ${card.color} text-slate-900 flex flex-col justify-between cursor-pointer select-none`}
+                  onClick={handleSwap}
+                >
+                  <div className="flex justify-between items-start">
+                    <div className="p-3 bg-white border-2 border-slate-900 rounded-2xl shadow-[2px_2px_0px_#0f172a]">
+                      <Icon className="w-6 h-6 text-slate-900" />
+                    </div>
+                    <span className="px-3 py-1 bg-white border-2 border-slate-900 rounded-full text-xs font-black uppercase tracking-wider shadow-[2px_2px_0px_#0f172a]">
+                      {card.badge}
+                    </span>
+                  </div>
+
+                  <div>
+                    <h3 className="text-2xl font-black leading-tight mt-2">
+                      {card.title}
+                    </h3>
+                    <p className="text-xs font-extrabold uppercase tracking-widest text-slate-800 opacity-80 mt-1">
+                      {card.subtitle}
+                    </p>
+                    <p className="text-sm font-semibold mt-3 text-slate-900 leading-snug line-clamp-3">
+                      {card.desc}
+                    </p>
+                  </div>
+
+                  <div className="flex justify-between items-center pt-3 border-t-2 border-slate-900/30">
+                    <span className="text-xs font-black uppercase tracking-wider">
+                      {card.stats}
+                    </span>
+                    <span className="text-xs font-bold underline flex items-center gap-1">
+                      Tap to swap <ChevronRight className="w-4 h-4 inline" />
+                    </span>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </AnimatePresence>
+        </div>
+
+        <motion.button
+          whileHover={{ scale: 1.05, translate: "-2px, -2px" }}
+          whileTap={{ scale: 0.95, translate: "2px, 2px" }}
+          onClick={handleSwap}
+          className="mt-8 px-6 py-3 bg-amber-400 hover:bg-amber-300 text-slate-900 font-extrabold text-base rounded-2xl border-3 border-slate-900 shadow-[4px_4px_0px_#0f172a] flex items-center gap-2"
+        >
+          <Repeat className="w-5 h-5" /> Swap Card
+        </motion.button>
+      </div>
+    </div>
+  );
+};
+
+// --- STICKER BADGE COMPONENT ---
+const StickerBadge = ({ text, color = "bg-pink-400", rotate = "-6deg", className = "" }) => {
+  return (
+    <motion.div
+      whileHover={{ rotate: [0, -8, 8, 0], scale: 1.08 }}
+      transition={{ duration: 0.4 }}
+      style={{ rotate }}
+      className={`absolute z-20 px-4 py-2 rounded-2xl border-3 border-slate-900 text-slate-900 font-extrabold text-xs md:text-sm uppercase tracking-wider shadow-[3px_3px_0px_#0f172a] ${color} ${className}`}
+    >
+      ★ {text} ★
+    </motion.div>
+  );
+};
+
+export default function MarkZuckerbergLanding() {
+  const [lang, setLang] = useState('EN');
+  const [isDark, setIsDark] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState("All");
+
+  const t = contentData[lang];
+
+  // Toggle Theme
+  useEffect(() => {
+    if (isDark) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [isDark]);
+
+  // Filter Ventures
+  const filteredVentures = selectedCategory === "All" || selectedCategory === "Semua"
+    ? t.ventures.items 
+    : t.ventures.items.filter(item => item.category === selectedCategory);
+
+  return (
+    <div className={`min-h-screen font-sans transition-colors duration-300 ${isDark ? 'bg-slate-950 text-amber-50' : 'bg-[#fffbeb] text-slate-900'}`}>
+      
+      {/* 1. TICKER MARQUEE BAR */}
+      <div className="w-full bg-blue-600 border-b-3 border-slate-900 overflow-hidden whitespace-nowrap py-2 text-white font-black text-sm tracking-wide">
+        <div className="inline-block animate-[marquee_25s_linear_infinite]">
+          <span>{t.ticker} {t.ticker}</span>
+        </div>
+      </div>
+
+      {/* 2. NAVBAR */}
+      <header className="sticky top-0 z-50 bg-amber-50/90 dark:bg-slate-900/90 backdrop-blur-md border-b-3 border-slate-900 px-4 lg:px-12 py-4">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
+          
+          {/* Logo / Title */}
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-2xl bg-amber-400 border-2 border-slate-900 shadow-[2px_2px_0px_#0f172a] flex items-center justify-center font-black text-slate-900 text-xl">
+              MZ
+            </div>
+            <span className="font-extrabold text-xl md:text-2xl tracking-tight text-slate-900 dark:text-cream">
+              ZUCK<span className="text-blue-600 dark:text-amber-400">.META</span>
+            </span>
+          </div>
+
+          {/* Center Links (Desktop) */}
+          <nav className="hidden md:flex items-center gap-6 font-extrabold text-sm text-slate-800 dark:text-slate-200">
+            <a href="#about" className="hover:text-blue-600 dark:hover:text-amber-400 transition-colors">{t.nav.about}</a>
+            <a href="#ventures" className="hover:text-blue-600 dark:hover:text-amber-400 transition-colors">{t.nav.ventures}</a>
+            <a href="#tech" className="hover:text-blue-600 dark:hover:text-amber-400 transition-colors">{t.nav.tech}</a>
+            <a href="#cardswap" className="hover:text-blue-600 dark:hover:text-amber-400 transition-colors">{t.nav.cards}</a>
+            <a href="#contact" className="hover:text-blue-600 dark:hover:text-amber-400 transition-colors">{t.nav.contact}</a>
+          </nav>
+
+          {/* Controls: Dark Toggle & Bilingual */}
+          <div className="flex items-center gap-3">
+            {/* Language Switcher */}
+            <button
+              onClick={() => setLang(lang === 'EN' ? 'ID' : 'EN')}
+              className="px-3 py-1.5 bg-pink-400 hover:bg-pink-300 text-slate-900 font-extrabold text-xs rounded-xl border-2 border-slate-900 shadow-[2px_2px_0px_#0f172a] transition-all"
+            >
+              🌐 {lang}
+            </button>
+
+            {/* Dark/Light Glassmorphism Toggle */}
+            <button
+              onClick={() => setIsDark(!isDark)}
+              className="p-2 bg-amber-300 dark:bg-slate-800 hover:scale-105 text-slate-900 dark:text-amber-300 rounded-xl border-2 border-slate-900 shadow-[2px_2px_0px_#0f172a] transition-all"
+              aria-label="Toggle Theme"
+            >
+              {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {/* 3. HERO SECTION */}
+      <section id="about" className="relative py-16 md:py-24 px-4 lg:px-12 border-b-3 border-slate-900 bg-amber-400 dark:bg-slate-900 transition-colors overflow-hidden">
+        
+        {/* Background SVG Wave edge at bottom */}
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center relative z-10">
+          
+          {/* Left Text Column */}
+          <div className="lg:col-span-7 flex flex-col items-start">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white text-slate-900 border-2 border-slate-900 font-extrabold text-xs uppercase tracking-widest shadow-[3px_3px_0px_#0f172a] mb-6">
+              <Sparkles className="w-4 h-4 text-blue-600" /> Founder & CEO @ Meta
+            </div>
+
+            <h1 className="font-black text-5xl sm:text-6xl md:text-7xl lg:text-8xl tracking-tight text-slate-900 dark:text-amber-400 leading-[0.95]">
+              {t.hero.titleLine1} <br />
+              <span className="text-blue-600 dark:text-white underline decoration-pink-500 decoration-wavy decoration-4">
+                {t.hero.titleLine2}
+              </span> <br />
+              {t.hero.titleLine3}
+            </h1>
+
+            <p className="mt-6 text-slate-900 dark:text-slate-200 text-lg md:text-xl font-bold leading-relaxed max-w-2xl">
+              {t.hero.subline}
+            </p>
+
+            <div className="mt-8 flex flex-wrap gap-4">
+              <motion.a
+                whileHover={{ translate: "-2px, -2px" }}
+                whileTap={{ translate: "4px, 4px" }}
+                href="#ventures"
+                className="px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white font-black text-lg rounded-2xl border-3 border-slate-900 shadow-[4px_4px_0px_#0f172a] flex items-center gap-2"
+              >
+                {t.hero.btn1} <ArrowUpRight className="w-5 h-5" />
+              </motion.a>
+
+              <motion.a
+                whileHover={{ translate: "-2px, -2px" }}
+                whileTap={{ translate: "4px, 4px" }}
+                href="#tech"
+                className="px-8 py-4 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-black text-lg rounded-2xl border-3 border-slate-900 shadow-[4px_4px_0px_#0f172a] flex items-center gap-2"
+              >
+                {t.hero.btn2}
+              </motion.a>
+            </div>
+          </div>
+
+          {/* Right Column: Real Mark Zuckerberg Portrait Frame with Sticker Badges */}
+          <div className="lg:col-span-5 relative flex justify-center">
+            
+            {/* Sticker Badges Overlapping Photo */}
+            <StickerBadge 
+              text={t.hero.badge1} 
+              color="bg-pink-400" 
+              rotate="-12deg" 
+              className="-top-4 -left-2 md:left-4" 
+            />
+            <StickerBadge 
+              text={t.hero.badge2} 
+              color="bg-emerald-400" 
+              rotate="8deg" 
+              className="-bottom-4 -right-2 md:right-4" 
+            />
+
+            {/* Photo Container */}
+            <motion.div 
+              initial={{ rotate: -3, scale: 0.95 }}
+              animate={{ rotate: 0, scale: 1 }}
+              transition={{ duration: 0.6 }}
+              className="relative w-full max-w-md aspect-square rounded-3xl border-4 border-slate-900 bg-white p-3 shadow-[8px_8px_0px_#0f172a] overflow-hidden"
+            >
+              <img 
+                src="https://upload.wikimedia.org/wikipedia/commons/1/18/Mark_Zuckerberg_F8_2019_Keynote_%2832854483567%29_%28cropped%29.jpg" 
+                alt="Mark Zuckerberg Authentic Portrait" 
+                className="w-full h-full object-cover rounded-2xl border-2 border-slate-900"
+                onError={(e) => {
+                  e.target.src = "https://placehold.co/600x600/2563eb/ffffff?text=Mark+Zuckerberg";
+                }}
+              />
+            </motion.div>
+          </div>
+
+        </div>
+      </section>
+
+      {/* 4. STATS STRIP */}
+      <section className="py-12 px-4 lg:px-12 bg-white dark:bg-slate-950 border-b-3 border-slate-900">
+        <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-6">
+          <div className="p-6 bg-amber-300 dark:bg-slate-900 rounded-3xl border-3 border-slate-900 shadow-[4px_4px_0px_#0f172a] text-center">
+            <h3 className="font-black text-4xl lg:text-5xl text-slate-900 dark:text-amber-400">{t.stats.reach}</h3>
+            <p className="text-xs md:text-sm font-bold text-slate-800 dark:text-slate-300 mt-2">{t.stats.reachDesc}</p>
+          </div>
+          <div className="p-6 bg-pink-300 dark:bg-slate-900 rounded-3xl border-3 border-slate-900 shadow-[4px_4px_0px_#0f172a] text-center">
+            <h3 className="font-black text-4xl lg:text-5xl text-slate-900 dark:text-pink-400">{t.stats.val}</h3>
+            <p className="text-xs md:text-sm font-bold text-slate-800 dark:text-slate-300 mt-2">{t.stats.valDesc}</p>
+          </div>
+          <div className="p-6 bg-blue-300 dark:bg-slate-900 rounded-3xl border-3 border-slate-900 shadow-[4px_4px_0px_#0f172a] text-center">
+            <h3 className="font-black text-4xl lg:text-5xl text-slate-900 dark:text-blue-400">{t.stats.ai}</h3>
+            <p className="text-xs md:text-sm font-bold text-slate-800 dark:text-slate-300 mt-2">{t.stats.aiDesc}</p>
+          </div>
+          <div className="p-6 bg-emerald-300 dark:bg-slate-900 rounded-3xl border-3 border-slate-900 shadow-[4px_4px_0px_#0f172a] text-center">
+            <h3 className="font-black text-4xl lg:text-5xl text-slate-900 dark:text-emerald-400">{t.stats.czi}</h3>
+            <p className="text-xs md:text-sm font-bold text-slate-800 dark:text-slate-300 mt-2">{t.stats.cziDesc}</p>
+          </div>
+        </div>
+      </section>
+
+      {/* 5. VENTURES & PROJECTS WITH CATEGORY FILTER */}
+      <section id="ventures" className="py-20 px-4 lg:px-12 border-b-3 border-slate-900">
+        <div className="max-w-7xl mx-auto">
+          
+          <div className="text-center max-w-3xl mx-auto mb-12">
+            <h2 className="font-black text-4xl md:text-6xl text-slate-900 dark:text-cream">
+              {t.ventures.title}
+            </h2>
+            <p className="text-slate-700 dark:text-slate-300 font-bold text-lg mt-3">
+              {t.ventures.subtitle}
+            </p>
+          </div>
+
+          {/* Category Filters */}
+          <div className="flex flex-wrap items-center justify-center gap-3 mb-12">
+            {t.ventures.categories.map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setSelectedCategory(cat)}
+                className={`px-5 py-2.5 rounded-2xl border-2 border-slate-900 font-extrabold text-sm transition-all shadow-[2px_2px_0px_#0f172a] ${
+                  selectedCategory === cat
+                    ? 'bg-blue-600 text-white translate-x-[1px] translate-y-[1px] shadow-none'
+                    : 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white hover:bg-amber-300'
+                }`}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+
+          {/* Venture Cards Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <AnimatePresence mode="popLayout">
+              {filteredVentures.map((item) => (
+                <motion.div
+                  layout
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  transition={{ duration: 0.3 }}
+                  key={item.id}
+                  className="p-6 rounded-3xl border-3 border-slate-900 bg-white dark:bg-slate-900 shadow-[6px_6px_0px_#0f172a] flex flex-col justify-between hover:-translate-y-1 transition-transform"
+                >
+                  <div>
+                    <div className="flex justify-between items-center mb-4">
+                      <span className={`px-3 py-1 rounded-full text-xs font-black uppercase border-2 border-slate-900 text-slate-900 shadow-[2px_2px_0px_#0f172a] ${item.color}`}>
+                        {item.badge}
+                      </span>
+                      <span className="text-xs font-extrabold text-slate-800 dark:text-slate-300">
+                        {item.category}
+                      </span>
+                    </div>
+
+                    <h3 className="font-black text-2xl text-slate-900 dark:text-white mb-2">
+                      {item.name}
+                    </h3>
+
+                    <p className="text-slate-700 dark:text-slate-300 text-sm font-semibold mb-6">
+                      {item.desc}
+                    </p>
+                  </div>
+
+                  <div className="pt-4 border-t-2 border-slate-900/20 flex justify-between items-center">
+                    <span className="text-xs font-black text-blue-600 dark:text-amber-400">
+                      {item.tag}
+                    </span>
+                    <a
+                      href={item.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="p-2 bg-amber-400 hover:bg-amber-300 rounded-xl border-2 border-slate-900 shadow-[2px_2px_0px_#0f172a] text-slate-900"
+                    >
+                      <ExternalLink className="w-4 h-4" />
+                    </a>
+                  </div>
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </div>
+
+        </div>
+      </section>
+
+      {/* 6. INTERACTIVE 3D WIREFRAME / PARTICLE SECTION */}
+      <section id="tech" className="py-20 px-4 lg:px-12 bg-blue-600 dark:bg-slate-900 border-b-3 border-slate-900 text-white">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+          
+          <div className="lg:col-span-6">
+            <span className="inline-block px-4 py-1.5 rounded-full bg-amber-400 text-slate-900 border-2 border-slate-900 font-extrabold text-xs uppercase tracking-widest shadow-[3px_3px_0px_#0f172a] mb-4">
+              Three.js Canvas Visualizer
+            </span>
+            <h2 className="font-black text-4xl md:text-6xl leading-tight">
+              {t.tech.title}
+            </h2>
+            <p className="text-amber-100 dark:text-slate-300 text-lg font-bold mt-4 mb-8">
+              {t.tech.subtitle}
+            </p>
+
+            <div className="space-y-4">
+              {t.tech.pillars.map((p, idx) => (
+                <div key={idx} className="p-4 bg-white/10 backdrop-blur-md rounded-2xl border-2 border-slate-900 shadow-[3px_3px_0px_#0f172a]">
+                  <h4 className="font-black text-xl text-amber-300">{p.title}</h4>
+                  <p className="text-sm font-medium mt-1 text-slate-100">{p.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Interactive 3D Canvas Box */}
+          <div className="lg:col-span-6 relative h-[420px] bg-slate-950 rounded-3xl border-4 border-slate-900 shadow-[8px_8px_0px_#0f172a] overflow-hidden p-2">
+            <Interactive3DCanvas isDark={isDark} />
+            <div className="absolute top-4 left-4 bg-amber-400 text-slate-900 text-xs font-black px-3 py-1 rounded-full border-2 border-slate-900 shadow-[2px_2px_0px_#0f172a]">
+              Move Mouse to Control 3D Matrix
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      {/* 7. CARD SWAP SECTION */}
+      <section id="cardswap" className="py-20 px-4 lg:px-12 bg-amber-300 dark:bg-slate-950 border-b-3 border-slate-900">
+        <CardSwapSection lang={lang} />
+      </section>
+
+      {/* 8. QUOTES & PHILOSOPHY */}
+      <section className="py-20 px-4 lg:px-12 bg-white dark:bg-slate-900 border-b-3 border-slate-900">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="font-black text-4xl md:text-5xl text-slate-900 dark:text-white">
+              {t.reviews.title}
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {t.reviews.items.map((rev, i) => (
+              <div 
+                key={i} 
+                className={`p-6 rounded-3xl border-3 border-slate-900 shadow-[6px_6px_0px_#0f172a] relative ${
+                  i === 0 ? 'bg-amber-300' : i === 1 ? 'bg-pink-300' : 'bg-blue-300'
+                } text-slate-900 flex flex-col justify-between`}
+              >
+                <p className="font-black text-lg leading-relaxed">
+                  "{rev.text}"
+                </p>
+
+                <div className="mt-6 pt-4 border-t-2 border-slate-900/30">
+                  <div className="font-extrabold text-base">{rev.author}</div>
+                  <div className="text-xs font-bold text-slate-800 uppercase tracking-wider">{rev.role}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 9. CONTACT & FOOTER */}
+      <footer id="contact" className="py-16 px-4 lg:px-12 bg-slate-900 text-white">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center pb-12 border-b-2 border-slate-800">
+          
+          <div className="lg:col-span-7">
+            <h2 className="font-black text-4xl md:text-6xl text-amber-400">
+              {t.contact.title}
+            </h2>
+            <p className="text-slate-300 text-lg font-bold mt-2">
+              {t.contact.subtitle}
+            </p>
+            <p className="text-slate-400 text-sm font-semibold mt-4">
+              📍 {t.contact.address}
+            </p>
+          </div>
+
+          <div className="lg:col-span-5 flex flex-wrap gap-4 justify-start lg:justify-end">
+            <a
+              href="https://threads.net"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-6 py-3.5 bg-amber-400 hover:bg-amber-300 text-slate-900 font-extrabold rounded-2xl border-3 border-slate-900 shadow-[4px_4px_0px_#0f172a] flex items-center gap-2"
+            >
+              <MessageSquare className="w-5 h-5" /> {t.contact.btn}
+            </a>
+
+            <a
+              href="https://github.com/facebook"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-3.5 bg-white text-slate-900 hover:bg-slate-200 rounded-2xl border-3 border-slate-900 shadow-[4px_4px_0px_#0f172a]"
+            >
+              <Github className="w-6 h-6" />
+            </a>
+
+            <a
+              href="https://linkedin.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-3.5 bg-blue-600 text-white hover:bg-blue-500 rounded-2xl border-3 border-slate-900 shadow-[4px_4px_0px_#0f172a]"
+            >
+              <Linkedin className="w-6 h-6" />
+            </a>
+          </div>
+
+        </div>
+
+        {/* Big Wordmark Footer */}
+        <div className="max-w-7xl mx-auto pt-12 flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="font-black text-6xl md:text-8xl tracking-tight text-amber-400 opacity-90 select-none">
+            ZUCKERBERG
+          </div>
+          <div className="text-xs font-extrabold text-slate-400">
+            © {new Date().getFullYear()} Meta Platforms, Inc. All rights reserved.
+          </div>
+        </div>
+      </footer>
+
+    </div>
+  );
+}
